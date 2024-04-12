@@ -231,21 +231,22 @@ class InferenceDataset(Dataset):
                 atom_cutoff=self.atom_radius,
                 atom_max_neighbors=self.atom_max_neighbors)
 
+            protein_center = torch.mean(complex_graph['receptor'].pos, dim=0, keepdim=True)
+            complex_graph['receptor'].pos -= protein_center
+            if self.all_atoms:
+                complex_graph['atom'].pos -= protein_center
+
+            ligand_center = torch.mean(complex_graph['ligand'].pos, dim=0, keepdim=True)
+            complex_graph['ligand'].pos -= ligand_center
+
+            complex_graph.original_center = protein_center
+            complex_graph.mol = mol
+            complex_graph['success'] = True
+
         except Exception as e:
             print(f'Skipping {name} because of the error:')
             print(e)
             complex_graph['success'] = False
             return complex_graph
 
-        protein_center = torch.mean(complex_graph['receptor'].pos, dim=0, keepdim=True)
-        complex_graph['receptor'].pos -= protein_center
-        if self.all_atoms:
-            complex_graph['atom'].pos -= protein_center
-
-        ligand_center = torch.mean(complex_graph['ligand'].pos, dim=0, keepdim=True)
-        complex_graph['ligand'].pos -= ligand_center
-
-        complex_graph.original_center = protein_center
-        complex_graph.mol = mol
-        complex_graph['success'] = True
         return complex_graph
