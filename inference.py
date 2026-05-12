@@ -139,6 +139,7 @@ test_dataset = InferenceDataset(out_dir=args.out_dir, complex_names=complex_name
                                 atom_max_neighbors=score_model_args.atom_max_neighbors,
                                 knn_only_graph=False if not hasattr(score_model_args, 'not_knn_only_graph') else not score_model_args.not_knn_only_graph)
 test_loader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=False)
+torch.save(test_loader, "test_loader.pth") 
 
 if args.confidence_model_dir is not None and not confidence_args.use_original_model_cache:
     print('HAPPENING | confidence model uses different type of graphs than the score model. '
